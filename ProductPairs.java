@@ -17,11 +17,12 @@ public class ProductPairs {
 				arr1.put(arr[i], 1);
 		}
 		for (int i = 0; i < size; i++) {
-			if (map1.get(arr[i]) == null && map2.get(arr[i]) == null
-					|| map1.get(product / arr[i]) == null && map2.get(product / arr[i]) == null) {
+			if (map1.get(arr[i]) == null || map2.get(product / arr[i]) == null) {
 				if (product % arr[i] == 0 && arr1.get(product / arr[i]) != null) {
 					map1.put(arr[i], 1);
 					map2.put(product / arr[i], 1);
+					map1.put(product / arr[i], 1);
+					map2.put(arr[i], 1);
 					count += 1;
 				}
 			}

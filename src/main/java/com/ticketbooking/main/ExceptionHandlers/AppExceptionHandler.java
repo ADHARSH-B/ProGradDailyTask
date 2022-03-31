@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import com.ticketbooking.main.dao.ErrorMessage;
+
+
+
 @ControllerAdvice
 public class AppExceptionHandler extends ResponseEntityExceptionHandler {
 
@@ -18,6 +21,8 @@ public class AppExceptionHandler extends ResponseEntityExceptionHandler {
 	public ResponseEntity<Object> handleUserNotFoundException(DataIntegrityViolationException ex){
 		return new ResponseEntity<>(new ErrorMessage(ex.getLocalizedMessage(),HttpStatus.BAD_REQUEST),HttpStatus.BAD_REQUEST);
 	}
+
+	
 	
 	
 }

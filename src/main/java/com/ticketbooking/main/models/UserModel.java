@@ -9,6 +9,7 @@ import javax.persistence.Id;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 @Entity(name = "user")
 
 public class UserModel {
@@ -22,6 +23,7 @@ public class UserModel {
 	private String name;
 	
 	@Column(unique = true, nullable = false)
+	@NotNull(message = "{NotNull.email}")
 	private String userName;
 	
 	@Column(nullable = false)

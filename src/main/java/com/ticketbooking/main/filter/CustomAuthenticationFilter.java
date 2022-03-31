@@ -14,6 +14,7 @@ import com.ticketbooking.main.controller.JwtUtil;
 import com.ticketbooking.main.models.UserModel;
 import com.ticketbooking.main.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,6 +26,10 @@ import org.springframework.util.StringUtils;
 public class CustomAuthenticationFilter extends OncePerRequestFilter {
 	@Autowired
 	JwtUtil jwtUtil;
+	
+//	@Autowired
+//	AuthenticationManager authenticationManager;
+
 
 	@Autowired
 	UserServiceImpl userDetailsService;
@@ -32,17 +37,19 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
+		
 		final String authorizationHeader = request.getHeader("Authorization");
 		
 		if (authorizationHeader == null) {
 			filterChain.doFilter(request, response);
 			return;
 		}
+		
 //        System.out.println(request.getReader().lines().collect(Collectors.joining(System.lineSeparator())));
 
 		String jwtToken = null;
 		String username = null;
-
+ 
 		String bearerToken = request.getHeader("Authorization").substring(1,
 				request.getHeader("Authorization").length() - 1);
 
@@ -54,11 +61,13 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
 				if (jwtUtil.validateToken(jwtToken, userDetails)) {
 					// what is happening here
 					UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-							userDetails, userDetails.getUsername(), userDetails.getAuthorities());				
-					SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+							userDetails, userDetails.getUsername(), userDetails.getAuthorities());	
+				//	authenticationManager.authenticate(usernamePasswordAuthenticationToken);
+			SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
 				}
 			}
 		}
+		
 		filterChain.doFilter(request, response);
 	}
 

@@ -1,5 +1,7 @@
 package com.ticketbooking.main.securitycon;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +13,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.ticketbooking.main.filter.CustomAuthenticationFilter;
@@ -31,16 +34,22 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
 	public void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth.userDetailsService(myuserdetailsserivce).passwordEncoder(encoder);
 	}
-
+	@Override
 	public void configure(HttpSecurity security) throws Exception {
 
 		// how to enable cross platform request (check for CORS policy )
 		
 		security.csrf().disable().authorizeRequests().antMatchers("/authenticate", "/signinuser", "/signUpuser")
 				.permitAll().anyRequest().authenticated().and().sessionManagement()
-				.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-				.addFilterBefore(customAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+				.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().anonymous().disable().exceptionHandling()
+				.authenticationEntryPoint(unauthorizedEntryPoint()).and().
+				addFilterBefore(customAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
+	}
+
+	@Bean
+	public AuthenticationEntryPoint unauthorizedEntryPoint() {
+	    return (request, response, authException) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
 	}
 
 	@Bean

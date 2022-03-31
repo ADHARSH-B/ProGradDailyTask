@@ -34,8 +34,6 @@ public class UserController {
 	@Autowired
 	private UserRepo userrepo;
 
-	@Autowired
-	AuthenticationManager authenticationManager;
 
 	@Autowired
 	UserSignInSuccess usersuccess;
@@ -60,12 +58,12 @@ public class UserController {
 		UserModel user = userrepo.findByuserName(usermodel.getUserName());
 		if (user != null) {
 			return new ResponseEntity<>(
-					new ErrorMessage("User Already Registered Please Sign in!!", HttpStatus.UNAUTHORIZED),
-					HttpStatus.UNAUTHORIZED);
+					new ErrorMessage("User Already Registered Please Sign in!!", HttpStatus.BAD_REQUEST),
+					HttpStatus.BAD_REQUEST);
 		}
 		usermodel.setPassword(encoder.encode(usermodel.getPassword()));
 		userrepo.save(usermodel);
-		return ResponseEntity.ok().body(usermodel);
+		return ResponseEntity.ok().body(usermodel);//200
 	}
 
 	@PostMapping("/signinuser")
@@ -87,7 +85,7 @@ public class UserController {
 		usersuccess.setAuthToken(jwtUtil.generateToken(userDetails));
 		usersuccess.setMessage("Successfully Authenticated");
 		usersuccess.setUsername(username);
-		return ResponseEntity.ok(usersuccess);
+		return ResponseEntity.ok(usersuccess);//200
 	}
 
 }

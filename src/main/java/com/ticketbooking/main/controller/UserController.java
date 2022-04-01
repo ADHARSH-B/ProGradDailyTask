@@ -3,6 +3,9 @@ package com.ticketbooking.main.controller;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,12 +17,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ticketbooking.main.dao.AuthResponse;
 import com.ticketbooking.main.dao.ErrorMessage;
 import com.ticketbooking.main.dao.UserSignInSuccess;
 import com.ticketbooking.main.models.UserModel;
@@ -80,12 +85,46 @@ public class UserController {
 		}
 		if (!encoder.matches(password, userDetails.getPassword()))
 			return new ResponseEntity<>(new ErrorMessage("UserName Or Password Is Invalid", HttpStatus.UNAUTHORIZED),
-					HttpStatus.UNAUTHORIZED);
+					HttpStatus.UNAUTHORIZED);	
 		
 		usersuccess.setAuthToken(jwtUtil.generateToken(userDetails));
+		usersuccess.setRefreshToken(jwtUtil.generateRefreshToken(userDetails));
 		usersuccess.setMessage("Successfully Authenticated");
 		usersuccess.setUsername(username);
 		return ResponseEntity.ok(usersuccess);//200
 	}
+	@PostMapping("/accesstoken")
+	public ResponseEntity<?> getAccessToken(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException{
+final String authorizationHeader = request.getHeader("Authorization");
+		
+		if (authorizationHeader == null) {
+			return new ResponseEntity<>(new ErrorMessage("Token Not Found !!", HttpStatus.NOT_FOUND),
+					HttpStatus.NOT_FOUND);	
+		}
+		
+//        System.out.println(request.getReader().lines().collect(Collectors.joining(System.lineSeparator())));
 
+		String jwtToken = null;
+		String username = null;
+ 
+		String bearerToken = request.getHeader("Authorization").substring(1,
+				request.getHeader("Authorization").length() - 1);
+	
+		if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+			jwtToken = bearerToken.substring(7, bearerToken.length());
+			username = jwtUtil.extractUsername(jwtToken);
+			if (username != null) {
+				UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+				if (jwtUtil.validateToken(jwtToken, userDetails)) {
+					 String accessToken=jwtUtil.generateToken(userDetails);
+					 String refreshToken=jwtUtil.generateRefreshToken(userDetails);
+					 return new ResponseEntity<>(new AuthResponse(accessToken,refreshToken),HttpStatus.ACCEPTED);	
+				}
+			}
+		}
+		return new ResponseEntity<>(new ErrorMessage("Token is not valid!!", HttpStatus.NOT_FOUND),
+				HttpStatus.NOT_FOUND);	
+
+	
+	}
 }

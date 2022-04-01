@@ -22,8 +22,8 @@ public class UserModel {
 	@Column(nullable = false)
 	private String name;
 	
-	@Column(unique = true, nullable = false)
-	@NotNull(message = "{NotNull.email}")
+	
+	@NotNull(message = "Username is null")
 	private String userName;
 	
 	@Column(nullable = false)

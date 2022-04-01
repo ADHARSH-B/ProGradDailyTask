@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 public class UserSignInSuccess {
 	private String message;
 	private String AuthToken;
+	private String refreshToken;
 	private String username;
 
 	public String getMessage() {
@@ -30,6 +31,14 @@ public class UserSignInSuccess {
 
 	public void setUsername(String username) {
 		this.username = username;
+	}
+
+	public String getRefreshToken() {
+		return refreshToken;
+	}
+
+	public void setRefreshToken(String refreshToken) {
+		this.refreshToken = refreshToken;
 	}
 
 }

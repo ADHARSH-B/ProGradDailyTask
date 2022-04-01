@@ -37,13 +37,16 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
-		
 		final String authorizationHeader = request.getHeader("Authorization");
 		
-		if (authorizationHeader == null) {
+		if(request.getServletPath().equals("/signinuser") || request.getServletPath().equals("/accesstoken") || authorizationHeader == null) {
 			filterChain.doFilter(request, response);
-			return;
 		}
+		
+//		if (authorizationHeader == null) {
+//			filterChain.doFilter(request, response);
+//			return;
+//		}
 		
 //        System.out.println(request.getReader().lines().collect(Collectors.joining(System.lineSeparator())));
 
@@ -52,7 +55,7 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
  
 		String bearerToken = request.getHeader("Authorization").substring(1,
 				request.getHeader("Authorization").length() - 1);
-
+	
 		if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
 			jwtToken = bearerToken.substring(7, bearerToken.length());
 			username = jwtUtil.extractUsername(jwtToken);

@@ -41,16 +41,11 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
 		
 		security.csrf().disable().authorizeRequests().antMatchers("/authenticate", "/signinuser", "/signUpuser")
 				.permitAll().anyRequest().authenticated().and().sessionManagement()
-				.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().anonymous().disable().exceptionHandling()
-				.authenticationEntryPoint(unauthorizedEntryPoint()).and().
+				.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().
 				addFilterBefore(customAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
 	}
 
-	@Bean
-	public AuthenticationEntryPoint unauthorizedEntryPoint() {
-	    return (request, response, authException) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-	}
+	
 
 	@Bean
 	@Override

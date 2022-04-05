@@ -1,4 +1,4 @@
-package com.ticketbooking.main.controller;
+package com.ticketbooking.main.util;
 
 //import com.sun.security.auth.UserPrincipal;
 import io.jsonwebtoken.Claims;

@@ -1,36 +1,56 @@
 package com.ticketbooking.main.models;
 
+import java.util.HashSet;
+
+import java.util.Set;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-
-
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-@Entity(name = "user")
 
+import org.hibernate.annotations.ManyToAny;
+
+@Entity(name = "user")
 public class UserModel {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	
-	@Column(nullable = false)
+
+	@Column(name = "user_id", nullable = false)
 	private Long id;
-	
+
 	@Column(nullable = false)
 	private String name;
-	
-	
+
 	@NotNull(message = "Username is null")
 	private String userName;
-	
+
 	@Column(nullable = false)
 	private String password;
-	
-	@Column(unique = true,nullable = false)
+
+	public Set<RoleModel> getRoles() {
+		return roles;
+	}
+
+	public void addRoles(RoleModel role) {
+		this.roles.add(role);
+	}
+
+	@Column(unique = true, nullable = false)
 	private String email;
+	@ManyToMany( fetch = FetchType.EAGER)
+	@JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+	private Set<RoleModel> roles = new HashSet<RoleModel>();
 
 	public UserModel() {
 	}

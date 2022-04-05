@@ -10,14 +10,17 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.ticketbooking.main.controller.JwtUtil;
 import com.ticketbooking.main.models.UserModel;
 import com.ticketbooking.main.service.UserServiceImpl;
+import com.ticketbooking.main.util.JwtUtil;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -32,21 +35,21 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
 
 
 	@Autowired
-	UserServiceImpl userDetailsService;
+	UserDetailsService userDetailsService;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		final String authorizationHeader = request.getHeader("Authorization");
 		
-		if(request.getServletPath().equals("/signinuser") || request.getServletPath().equals("/accesstoken") || authorizationHeader == null) {
+		if(request.getServletPath().equals("api/v1/auth/signin") || request.getServletPath().equals("api/v1/auth/signup") || authorizationHeader == null) {
 			filterChain.doFilter(request, response);
 		}
 		
-//		if (authorizationHeader == null) {
-//			filterChain.doFilter(request, response);
-//			return;
-//		}
+		if (authorizationHeader == null) {
+			filterChain.doFilter(request, response);
+			return;
+		}
 		
 //        System.out.println(request.getReader().lines().collect(Collectors.joining(System.lineSeparator())));
 
@@ -65,7 +68,9 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
 					// what is happening here
 					UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
 							userDetails, userDetails.getUsername(), userDetails.getAuthorities());	
+					
 				//	authenticationManager.authenticate(usernamePasswordAuthenticationToken);
+					
 			SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
 				}
 			}

@@ -1,14 +1,20 @@
 package com.ticketbooking.main.service;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.ticketbooking.main.models.RoleModel;
 import com.ticketbooking.main.models.UserModel;
 import com.ticketbooking.main.repository.UserRepo;
 
@@ -16,12 +22,63 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserService,UserDetailsService  {
+public class UserServiceImpl implements UserService, UserDetails {
 	@Autowired
-	private  UserRepo userrepo;
+	private UserRepo userrepo;
+	
+	private UserModel user;
+	
+	public UserServiceImpl() {
+		
+	}
+	public UserServiceImpl(UserModel user) {
+		this.user = user;
+	}
 
 	@Override
-	public UserModel saveUser(UserModel user) {
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		Set<RoleModel> rolesSet =user.getRoles();
+		ArrayList<GrantedAuthority> roles=new ArrayList<GrantedAuthority>();
+		
+		for(RoleModel role: rolesSet)
+			roles.add(new SimpleGrantedAuthority(role.getname()));
+		return roles;
+	}
+
+	@Override
+	public String getPassword() {
+		return user.getPassword();
+	}
+
+	@Override
+	public String getUsername() {
+		return user.getUserName();
+	}
+
+	@Override
+	public boolean isAccountNonExpired() {
+		return true;
+	}
+
+	@Override
+	public boolean isAccountNonLocked() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	@Override
+	public boolean isCredentialsNonExpired() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return true;
+	}
+
+	@Override
+	public UserModel saveUser(User user) {
 		return userrepo.save(user);
 	}
 
@@ -30,12 +87,4 @@ public class UserServiceImpl implements UserService,UserDetailsService  {
 		return userrepo.findByuserName(userName);
 	}
 
-	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		UserModel usermodel = userrepo.findByuserName(username);
-		if(usermodel==null) {
-			return null;
-		}
-		return new User(usermodel.getUserName(), usermodel.getPassword(), new ArrayList<>());
-	}
 }

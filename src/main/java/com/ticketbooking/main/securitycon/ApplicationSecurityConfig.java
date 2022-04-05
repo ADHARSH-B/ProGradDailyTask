@@ -1,5 +1,8 @@
 package com.ticketbooking.main.securitycon;
 
+import java.time.LocalDateTime;
+import org.json.JSONObject;
+
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,22 +33,35 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	CustomAuthenticationFilter customAuthenticationFilter;
 
-	@Override
-	public void configure(AuthenticationManagerBuilder auth) throws Exception {
+	@Autowired
+	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 		auth.userDetailsService(myuserdetailsserivce).passwordEncoder(encoder);
 	}
+
+	@Override
+	public void configure(AuthenticationManagerBuilder auth) throws Exception {
+
+		auth.userDetailsService(myuserdetailsserivce).passwordEncoder(encoder);
+	}
+
 	@Override
 	public void configure(HttpSecurity security) throws Exception {
 
 		// how to enable cross platform request (check for CORS policy )
-		
-		security.csrf().disable().authorizeRequests().antMatchers("/authenticate", "/signinuser", "/signUpuser")
-				.permitAll().anyRequest().authenticated().and().sessionManagement()
-				.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().
-				addFilterBefore(customAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-	}
 
-	
+		security.csrf().disable().authorizeRequests().antMatchers("/api/v1/admin/**").hasAuthority("USER")
+				.antMatchers("/api/v1/user/**").hasAuthority("USER").antMatchers("/api/v1/auth/**").permitAll()
+				.anyRequest().authenticated().and().sessionManagement()
+				.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+				.addFilterBefore(customAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+		
+		security.exceptionHandling().accessDeniedHandler((request, response, e) -> {
+			response.setContentType("application/json");
+			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+			response.getWriter().write(
+					new JSONObject().put("timestamp", LocalDateTime.now()).put("message", "Access denied").toString());
+		});
+	}
 
 	@Bean
 	@Override
@@ -53,3 +69,10 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
 		return super.authenticationManagerBean();
 	}
 }
+
+//security.exceptionHandling().authenticationEntryPoint((request, response, e) -> {
+//response.setContentType("application/json");
+//response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+//response.getWriter().write(
+//		new JSONObject().put("timestamp", LocalDateTime.now()).put("message", "Access denied").toString());
+//});

@@ -77,59 +77,6 @@ public class UserController {
 		return ResponseEntity.ok("Welcome " + SecurityContextHolder.getContext().getAuthentication().getName());
 	}
 
-//	@PostMapping("/signUpuser")
-//	public ResponseEntity<?> sigUpuser(@RequestBody UserModel usermodel) {
-//		UserModel user = userrepo.findByuserName(usermodel.getUserName());
-////		Set<RoleModel> roles=new HashSet<RoleModel>();
-////		roles.add(new RoleModel("USER"));
-////		
-//		if (user != null) {
-//			return new ResponseEntity<>(
-//					new ErrorMessage("User Already Registered Please Sign in!!", HttpStatus.BAD_REQUEST),
-//					HttpStatus.BAD_REQUEST);
-//		}
-//		usermodel.setPassword(encoder.encode(usermodel.getPassword()));
-//		//usermodel.setRoles(roles);
-//		userrepo.save(usermodel);
-//		return ResponseEntity.ok().body(usermodel);// 200
-//	}
-
-//	@PostMapping("/signinuser")
-//	public ResponseEntity<?> signInuser(@RequestBody AuthRequest authrequest) {
-//
-//		String username = authrequest.getUserName();
-//		String password = authrequest.getPassword();
-//
-//		UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-//
-//		try {
-//			UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-//					username, password);
-//			authenticationmanager.authenticate(usernamePasswordAuthenticationToken);
-//		} catch (BadCredentialsException e) {
-//			return new ResponseEntity<>(new ErrorMessage("Incorrect Username or Password!!", HttpStatus.BAD_REQUEST),
-//					HttpStatus.BAD_REQUEST);
-//		}
-//
-////		/UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-//
-//		// SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-//
-////		if (userDetails == null) {
-////			return new ResponseEntity<>(new ErrorMessage("User Not Registered Please Signup !!", HttpStatus.NOT_FOUND),
-////					HttpStatus.NOT_FOUND);
-////		}
-////		if (!encoder.matches(password, userDetails.getPassword()))
-////			return new ResponseEntity<>(new ErrorMessage("UserName Or Password Is Invalid", HttpStatus.UNAUTHORIZED),
-////					HttpStatus.UNAUTHORIZED);
-//		// UserDetails userDetails = new UserDetails
-//		userSuccess.setAuthToken(jwtUtil.generateToken(userDetails));
-//		userSuccess.setRefreshToken(jwtUtil.generateRefreshToken(userDetails));
-//		userSuccess.setMessage("Successfully Authenticated");
-//		userSuccess.setUsername(username);
-//		userSuccess.setRole(userDetails.getAuthorities());
-//		return ResponseEntity.ok(userSuccess);// 200
-//	}
 
 	@PostMapping("/accesstoken")
 	public ResponseEntity<?> getAccessToken(HttpServletRequest request, HttpServletResponse response)
@@ -164,30 +111,14 @@ public class UserController {
 
 	}
 
-//	@GetMapping("/404")
-//	public ResponseEntity<?> AccessDenied(){
-//		 return new ResponseEntity<>(new ErrorMessage("You are allowed to view this page ", HttpStatus.UNAUTHORIZED),
-//				HttpStatus.UNAUTHORIZED);
-//	}
+
 	@GetMapping("/allUsers")
 	public ResponseEntity<?> getAllUsers() {
-		System.out.println("check");
 		java.util.List<UserModel> user = userrepo.findAll();
 		if (user == null)
 			return new ResponseEntity<>(new ErrorMessage("No users available", HttpStatus.UNAUTHORIZED),
 					HttpStatus.UNAUTHORIZED);
-		return ResponseEntity.ok(user);
+		return ResponseEntity.ok(user); 
 	}
-
-//	@DeleteMapping("/deleteuser/{username}")
-//	public ResponseEntity<?> deleteUser(@PathVariable String username) {
-//		UserModel user=userrepo.findByuserName(username);
-//		if(user!=null) {
-//			userrepo.delete(user);
-//			return new ResponseEntity<>(new ErrorMessage("userdeletion Success ", HttpStatus.ACCEPTED),
-//					HttpStatus.ACCEPTED);
-//		}
-//		return new ResponseEntity<>(new ErrorMessage("userdeletion error ", HttpStatus.ACCEPTED),
-//				HttpStatus.ACCEPTED);
-//	}
+ 
 }

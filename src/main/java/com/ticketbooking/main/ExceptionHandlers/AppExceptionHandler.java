@@ -21,10 +21,10 @@ import com.ticketbooking.main.dao.ErrorMessage;
 @ControllerAdvice
 public class AppExceptionHandler extends ResponseEntityExceptionHandler {
 
-	@ExceptionHandler(PropertyValueException.class) 
-	public ResponseEntity<Object> handleUserNotFoundException(DataIntegrityViolationException ex){
-		return new ResponseEntity<>(new ErrorMessage("Null value not allowed",HttpStatus.BAD_REQUEST),HttpStatus.BAD_REQUEST);
-	}
+//	@ExceptionHandler(PropertyValueException.class) 
+//	public ResponseEntity<Object> handleUserNotFoundException(DataIntegrityViolationException ex){
+//		return new ResponseEntity<>(new ErrorMessage("Null value not allowed",HttpStatus.BAD_REQUEST),HttpStatus.BAD_REQUEST);
+//	}
 	
 	@ExceptionHandler(BadCredentialsException.class) 
 	public ResponseEntity<Object> handleUserNotFoundException(BadCredentialsException ex){

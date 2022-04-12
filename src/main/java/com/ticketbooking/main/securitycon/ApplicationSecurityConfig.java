@@ -49,7 +49,7 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
 
 		// how to enable cross platform request (check for CORS policy )
 
-		security.csrf().disable().authorizeRequests().antMatchers("/api/v1/admin/**").hasAuthority("USER")
+		security.csrf().disable().authorizeRequests()//.antMatchers("/api/v1/admin/**").hasAuthority("ADMIN")
 				.antMatchers("/api/v1/user/**").hasAuthority("USER").antMatchers("/api/v1/auth/**").permitAll()
 				.anyRequest().authenticated().and().sessionManagement()
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()

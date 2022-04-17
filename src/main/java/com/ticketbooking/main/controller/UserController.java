@@ -40,6 +40,7 @@ import com.ticketbooking.main.dao.TokenResponse;
 import com.ticketbooking.main.dao.AuthRequest;
 import com.ticketbooking.main.dao.ErrorMessage;
 import com.ticketbooking.main.dao.AuthResponse;
+import com.ticketbooking.main.models.BusModel;
 import com.ticketbooking.main.models.RoleModel;
 import com.ticketbooking.main.models.UserModel;
 
@@ -48,6 +49,7 @@ import com.ticketbooking.main.util.JwtUtil;
 
 import antlr.collections.List;
 
+import com.ticketbooking.main.repository.BusRepo;
 import com.ticketbooking.main.repository.UserRepo;
 
 @RestController
@@ -58,6 +60,8 @@ public class UserController {
 
 	@Autowired
 	AuthResponse userSuccess;
+	
+	
 
 	@Autowired
 	AuthenticationManager authenticationmanager;
@@ -120,5 +124,6 @@ public class UserController {
 					HttpStatus.UNAUTHORIZED);
 		return ResponseEntity.ok(user); 
 	}
+	
  
 }
